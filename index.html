@@ -1,0 +1,483 @@
+<!DOCTYPE HTML>
+<!--
+	Mirror pioneer - CompSci by KyraZzz
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Machine learning</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="logo">
+							<span class="icon fa-gem"></span>
+						</div>
+						<div class="content">
+							<div class="inner">
+								<h1>Implementation and Application of K-Means Clustering and Polynomial Regression</h1>
+								<p>Copyright 2020 @WEIJUN HUANG. Not to be quoted or reproduced without permission from the Mirror education.</p>
+							</div>
+						</div>
+						<nav>
+							<ul>
+								<li><a href="#intro">Intro</a></li>
+								<li><a href="#kms">K-Means Clustering</a></li>
+								<li><a href="#linreg">Linear Regression</a></li>
+								<li><a href="#conclusion">Reference</a></li>
+								<!--<li><a href="#elements">Elements</a></li>-->
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Intro -->
+							<article id="intro">
+								<h2 class="major">Intro</h2>
+								<span class="image main">
+									<img src="images/universe.jpg" alt="" />
+								</span>
+								<p>In the following paragraph, we will finally talk about the method of clustering data and the advantages and disadvantages it. After, we are going to talk about the implementation of the algorithm. At last, I implement our algorithm on the iris data set.<a href="#kms">K-Means Clustering</a>.</p>
+							</article>
+
+						<!-- kms -->
+							<article id="kms">
+								<h2 class="major">K-Means Clustering</h2>
+								<span class="image main"><img src="images/pic02.jpg" alt="" /></span>
+								<h1>1.Introduction</h1>
+								<p>K – means clustering is an unsupervised algorithm. This algorithm is to find how many groups needed for grouping data and how to group it. Its objective is to divide data into k groups and minimize the within-cluster sum of the squared difference(WCSS), which is the sum of squared difference between all the data to its corresponding means. In this way, we can have a grouping result that we are expected about. Mathematically, it can be expressed as n data where x = {x1 ,x2 ,…,xn } into K groups. μ i is the mean value of each group. If Group S = { s1 ,s2 ,…,s n } , x ∈S, then</p>
+								<span class="image main">
+									<img src="images/1.png">
+								</span>
+								<p>In the following paragraph, we will finally talk about the method of clustering data and the advantages and disadvantages of it. After, we are going to talk about the implementation of the algorithm. At last, I implement our algorithm on the iris data set.</p>
+								<h1>2.Algorithm</h1>
+								<h3>2.1 Five Steps For Clustering</h3>
+								<p>There are five steps for grouping.</p>
+									<ol>
+										<li>Initialize the coordinates of mean points{ u1 ,u2 ,…,u n }.</li>
+										<li>Calculate the distance between all data x to each mean ui </li>
+										<li>Assign data x to the group with the nearest mean.</li>
+										<li>Recalculate the means based on the current assignment.</li>
+										<li>At Last, repeat 2-4 until means converge.</li>
+									</ol>
+								<h3>2.2 3 random initializing method</h3>
+								<p>There are three methods for initialization.</p>
+								<p>The first method is to randomly initialize means within the maximum value and minimum value of the data. The second method is to choose data randomly as the mean point. The Third one is called k-means ++. It works with following steps</p>
+								<ol>
+									<li>it randomly selects one data as the first mean.</li>
+									<li>it calculates the distance between data and its closet mean.</li>
+									<li>it selects x as the next mean with the probability, where probability is proportional to the distance square. In this way, you can ensure that means are dispersed.</li>
+									<li>Finally, keep doing 2,3 until k means selected.</li>
+								</ol>
+								<h3>2.3 determine k values</h3>
+								<p>We also need to determine k before grouping. This can be done by “Elbow Method”. First, we need to calculate WCSS by each k value by multiple times to get an average value of WCSS. Draw the graph of WCSS against K. A high or low k-value determines the significance of the clustering result.</p>
+								<p>For example, the graph is shown in Figure 1, The graph looks like an inverse proportional function. The point of the elbow is at the value of k = 4, which has a relatively small WCSS and a reasonable number of classes. The reason for finding an elbow is because an elbow point is normally the expected group number so it appears a better result.</p>
+								<span class="image main">
+									<img src="images/2.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 1:The graph of WCSS against K. The point of elbow is the most optimum value of K</figcaption>
+								</span>
+								<h3>2.4 advantages & disadvantages</h3>
+								<p>There are several advantages to this algorithm. First, it is an unsupervised learning algorithm, so it does not need the correct label for the input data. It can learn how to classify the data only from the information of data. Second, the algorithm is proved to converge mathematically. Third, it is easy to be implemented due to its simplicity.</p>
+								<p>The algorithm looks reasonable, but it also has several limitations.</p>
+								<p>In initialization, K-means++ has a low processing speed but an accurate result of clustering. However, the first two methods may sort data in a high efficiency but the final result may not correct. Apart from that, this algorithm is heavily dependent on initialization.</p>
+								<p>Besides, distance sometimes is hard to define such as graph or matrix so impossible to determine k and for clustering. Furthermore, it is guaranteed to converge, but sometimes up in local minimum which not show the most optimum results of grouping due to the method of initialization used.</p>
+								<h1>3.Code structure</h1>
+								<h3>3.1Flow chart</h3>
+								<span class="image main">
+									<img src="images/3.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 2: The flow chart of the process</figcaption>
+								</span>
+								<h3>3.2explanation</h3>
+								<p>This algorithm consists of three mean parts. Initialization, distance, and new mean. The first parts of initialization are to creating mean points. The initialization method I used is called Kmeans ++ [1] which is proposed by Arthur et al. It firstly chooses a data as mean randomly and then chooses other points according to the distance to the mean after that. The data with further distance will have a greater possibility to be selected. In this situation, the initial means can be spread out and reduce the probability of meeting a local minimum. The second module is for calculated the distance and assign to each group. The distance between each mean and each data is being calculated by using np.linalg.norm() and data will be assigned to the group with that the distance between them is the least. The last module is to recalculate the mean according to the current groups. This can be done by using np.sum() and the result of it is divided by the average data in this group. For plotting the graph, I initially drawing the initial data with a black dot. After that, each group of data is assigned to a different color and the mean is being assigned to an identical color.</p>
+								<h3>3.3Results</h3>
+								<p>Figure 3 shows the results of clustering the data when k = 4. In Figure 3, purple stands for means in each group, and blue, red, green, yellow stands for the data in various groups.</p>
+								<span class="image main">
+									<img src="images/4.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 3:Result of clustering</figcaption>
+								</span>
+								<h1>4.Iris data</h1>
+								<h3>4.1introduction</h3>
+								<p>The whole name of Iris data is called “Anderson’s Iris data set”. It consists of 150 data in 4 dimensions. Each data records four information of flower which is sepal length, sepal width, petal length, and petal width, an example is shown in Figure 4. [2]</p>
+								<span class="image main">
+									<img src="images/5.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 4:samples of data in this dataset</figcaption>
+								</span>
+								<h3>4.2implementation</h3>
+								<p>The method of clustering this data is the same as the previous data. The only changes in this data are calculating 2 more dimensions when calculating WCSS, as well as calculating distance.</p>
+								<h3>4.3result</h3>
+								<p>From Figure 5, by calculating the WCSS and drawing a graph of WCSS against K, we can know that k=3 is the optimum choice for clustering data. After clustering, we can use any two dimensions to be the x-axis and y-axis to displaying the clustering results. Figure 6 shows the results of clustering by displaying different dimensions. However, the result is not correct when classifying this data because two types of flowers are almost mixed together, so it is almost impossible to separate them, which reveals k-mean clustering is not optimum for classifying in this dataset.</p>
+								<span class="image main">
+									<img src="images/6.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 5:The graph of WCSS against K. The point of the elbow is the most optimum value of K</figcaption>
+								</span>
+								<span class="image main">
+									<img src="images/7.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 6:Result of clustering</figcaption>
+								</span>
+								<h1>5.Conclusion</h1>
+								<p>We implement and test K-mean clustering on two datasets. one is synthetic data with separable classes, while another is an inseparable Iris Dataset. We proved that K-mean clustering performs better on a separable dataset.</p>
+							</article>
+
+						<!-- linreg -->
+							<article id="linreg">
+								<h2 class="major">Linear Regression</h2>
+								<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+								<h1>1.Introduction</h1>
+								<p>polynomial regression is a fundamental supervised learning algorithm in machine learning, which means that training data contains both parameters and the corresponding value to it. Its standard form looks like y=w0+ w1x1+w2x2+w3x3+⋯+wkxk . The goal of this algorithm is to fit the best hyperplane for the given training data by minimizing the loss function. i.e. find the best w0,w1,……wk. The mathematical formula is showing below, where N is the number of data, W and X are parameter and data in matrix respectively. a stands for learning rate to adjust the speed of converging. T means transposing the matrix. a𝑊T𝑊 is regularization which restricts the size of L which stands for loss function. The loss function can let us know whether it is close to the exact result.</p>
+								<span class="image main">
+									<img src="images/8.png">
+								</span>
+								<p>In the following paragraph, we will briefly talk about the algorithm of polynomial regression, and showing how it is being proved by a mathematical formula. We will also compare the different algorithm that has been used. After that, we are going to talk about the implementation of this method. At last, the result will be shown.</p>
+								<h1>2.Algorithm</h1>
+								<h3>2.1Gradient Descent</h3>
+								<p>The first method for finding the best fitting line is gradient descent. This method is to calculate the next value of W from the previous value of W minus by the differentiation of L. The mathematical formula by calculating this is shown below, where a is the learning rate that has been mentioned before, and Y is the expected result of data.</p>
+								<span class="image main">
+									<img src="images/9.png">
+								</span>
+								<p>The process of algebra manipulation is shown below.</p>
+								<span class="image main">
+									<img src="images/11.png">
+								</span>
+								<h3>2.2Calculate global minimum directly</h3>
+								<p>The second method is to calculate the global minimum directly [3]. It is a feasible method because the loss function is a convex function, so there is only one minimum point. This ef method is to calculate out value W as = 0. The formula is showing like this:</p>
+								<span class="image main">
+									<img src="images/12.png">
+								</span>
+								<p>Then I will show how to prove it. When using dL/dw=0 for calculating the global minimum</p>
+								<span class="image main">
+									<img src="images/13.png">
+								</span>
+								<h3>2.3The comparison between them</h3>
+								<p>There are some similarities between them.</p>
+								<ol>
+									<li>they both use to estimate a function by given training data. After that, they will both estimate the value of validation.</li>
+									<li>They have the same aim that they want to minimize the sum of the square difference between an estimated value and a real value.</li>
+									<li>They can both guarantee to find a minimum point.</li>
+								</ol>
+								<p>However, they have some differences.</p>
+								<p>First of all, calculate the global minimum method find the minimum point by differentiation directly instead of iteration. As a result, this method requires the presence of differentiation and a singular matrix, so not all loss functions can be guaranteed to be calculated. However, it has a high processing speed than gradient descent.</p>
+								<p>In gradient descent, it iterates until converges when finding a minimum point. The disadvantage of it is the speed of calculation is slow. It may also not guarantee to converge because it may meet gradient explosion due to the value of the gradient is too big. To solve this problem, we can set the learning rate to slow down the iteration speed. Although this method is not optimum for polynomial regression, it is widely used in linear regression, because it can be used to calculating almost all the loss functions.</p>
+								<h1>3.Implementation</h1>
+								<p>We implement the code by using NumPy library. The structure of the code is shown in Figure 7.</p>
+								<span class="image main">
+									<img src="images/14.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 7:The diagram illustrates the overall structure of the code. It consists of three parts: reading data, calculation and plotting.</figcaption>
+								</span>
+								<p>Our code consists of three parts. The first part is reading data from the file. The data will be divided into training data and testing data. Some useful variables will also be initialized. The second parts consist of two options to obtain W. The first method is using gradient descent to obtain value when converge. The second method is using Least-squares estimation for calculating out directly. The third part is to draw the graph. I draw two kinds of graphs. The first graph is the estimated data and the second graph is the loss value in each number of parameters.</p>
+								<h1>4.Result</h1>
+								<p>I implement my test in polynomial regression rather than linear regression. Polynomial regression uses x , 𝑥 1 , 𝑥 l , 𝑥 m , … … , 𝑥 n rather than x 8 , x 1 , x l , x m , … … , x n that is used in linear regression for several dimensions. As a result, polynomial regression only has two dimensions which show its simplicity. Apart from that, linear regression is more optimum for the data that looks linear and polynomial regression can fits more with the data that is in a normal distribution.</p>
+								<p>Figure 10 shows the change in the graphic of function when the number of parameters changes. Figure 9shows the relationship between training data and relative function when the number of parameters is 11. We can easily see that the function in 12 parameter changes a lot which leads to a high loss in testing data that is shown in Figure 8. From watching the loss function graph, 11 parameters are the most optimum value for doing linear regression where training loss and testing loss are both very low. Apart from that, by using regularization, we can see that the loss function of testing data has been decreased more significantly at the optimum value of 1e-6 which shown by Figure 11. However, a large regularization may not show a very good result which is shown in Figure 12.</p>
+								<span class="image main">
+									<img src="images/15.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 10: The result function when the number of parameters is 9, 10 ,11 and 12 respectively with testing data</figcaption>
+								</span>
+								<span class="image main">
+									<img src="images/16.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 9: :function and testing data when the parameter is 11</figcaption>
+								</span>
+								<span class="image main">
+									<img src="images/17.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 8:loss function graph of testing data(yellow line) and training data(blue line)</figcaption>
+								</span>
+								<span class="image main">
+									<img src="images/18.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 12: regularization by setting value in 1e-6</figcaption>
+								</span>
+								<span class="image main">
+									<img src="images/19.png">
+									<figcaption style="text-align: center; width: 100%;">Figure 11: regularization by setting value in 2e-6</figcaption>
+								</span>
+								<h1>5.Conclusion</h1>
+								<p>We implement and test polynomial regression on this dataset and proved that polynomial regression worked well on this dataset with the help of regularization.</p>
+
+
+
+
+
+
+							</article>
+
+						<!-- conclusion -->
+							<article id="conclusion">
+								<h2 class="major">Reference</h2>
+								<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+								<p>[1] D. Arthur and S. Vassilvitskii, K-means++:the advantages of careful seeding, proceeding of the enghteenth annual ACM-SIAM symposium on Discrete algorithms, 2007.</p>
+
+								<p>[2] "wikipedia.org," 2021. [Online]. Available: https://en.wikipedia.org/wiki/Iris_flower_data_set.</p>
+									
+								<p>[3] "Wikipedia," 2021. [Online]. Available: https://en.wikipedia.org/wiki/Linear_regression.</p>
+							</article>
+
+						<!-- Elements -->
+							<article id="elements">
+								<h2 class="major">Elements</h2>
+
+								<section>
+									<h3 class="major">Text</h3>
+									<p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
+									This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
+									This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
+									<hr />
+									<h2>Heading Level 2</h2>
+									<h3>Heading Level 3</h3>
+									<h4>Heading Level 4</h4>
+									<h5>Heading Level 5</h5>
+									<h6>Heading Level 6</h6>
+									<hr />
+									<h4>Blockquote</h4>
+									<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
+									<h4>Preformatted</h4>
+									<pre><code>i = 0;
+
+while (!deck.isInOrder()) {
+    print 'Iteration ' + i;
+    deck.shuffle();
+    i++;
+}
+
+print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
+								</section>
+
+								<section>
+									<h3 class="major">Lists</h3>
+
+									<h4>Unordered</h4>
+									<ul>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Alternate</h4>
+									<ul class="alt">
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Ordered</h4>
+									<ol>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis viverra.</li>
+										<li>Felis enim feugiat.</li>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis lorem.</li>
+										<li>Felis enim et feugiat.</li>
+									</ol>
+									<h4>Icons</h4>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+									</ul>
+
+									<h4>Actions</h4>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Table</h3>
+									<h4>Default</h4>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+
+									<h4>Alternate</h4>
+									<div class="table-wrapper">
+										<table class="alt">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</section>
+
+								<section>
+									<h3 class="major">Buttons</h3>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Primary</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button">Default</a></li>
+										<li><a href="#" class="button small">Small</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button primary icon solid fa-download">Icon</a></li>
+										<li><a href="#" class="button icon solid fa-download">Icon</a></li>
+									</ul>
+									<ul class="actions">
+										<li><span class="button primary disabled">Disabled</span></li>
+										<li><span class="button disabled">Disabled</span></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Form</h3>
+									<form method="post" action="#">
+										<div class="fields">
+											<div class="field half">
+												<label for="demo-name">Name</label>
+												<input type="text" name="demo-name" id="demo-name" value="" placeholder="Jane Doe" />
+											</div>
+											<div class="field half">
+												<label for="demo-email">Email</label>
+												<input type="email" name="demo-email" id="demo-email" value="" placeholder="jane@untitled.tld" />
+											</div>
+											<div class="field">
+												<label for="demo-category">Category</label>
+												<select name="demo-category" id="demo-category">
+													<option value="">-</option>
+													<option value="1">Manufacturing</option>
+													<option value="1">Shipping</option>
+													<option value="1">Administration</option>
+													<option value="1">Human Resources</option>
+												</select>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-low" name="demo-priority" checked>
+												<label for="demo-priority-low">Low</label>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-high" name="demo-priority">
+												<label for="demo-priority-high">High</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-copy" name="demo-copy">
+												<label for="demo-copy">Email me a copy</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-human" name="demo-human" checked>
+												<label for="demo-human">Not a robot</label>
+											</div>
+											<div class="field">
+												<label for="demo-message">Message</label>
+												<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+											</div>
+										</div>
+										<ul class="actions">
+											<li><input type="submit" value="Send Message" class="primary" /></li>
+											<li><input type="reset" value="Reset" /></li>
+										</ul>
+									</form>
+								</section>
+
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; WEIJUN HUANG</p>
+					</footer>
+
+			</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
