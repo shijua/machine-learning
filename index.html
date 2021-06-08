@@ -33,7 +33,8 @@
 								<li><a href="#kms">K-Means Clustering</a></li>
 								<li><a href="#linreg">Linear Regression</a></li>
 								<li><a href="#conclusion">Reference</a></li>
-								<!--<li><a href="#elements">Elements</a></li>-->
+								<!-- <li><a href="#elements">Elements</a></li> -->
+								<li><a href="#code">Code</a></li>
 							</ul>
 						</nav>
 					</header>
@@ -218,6 +219,293 @@
 								<p>[3] "Wikipedia," 2021. [Online]. Available: https://en.wikipedia.org/wiki/Linear_regression.</p>
 							</article>
 
+
+							<article id="code">
+								<h2 class="major">Code</h2>
+								<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+								<h1>k-means clustering</h1>
+								<pre><code>
+									#12131232131231
+import numpy as np
+from random import *
+import matplotlib.pyplot as plt
+import pandas as pd
+class k_mean():
+    def __init__(self):
+        self.first = True
+        #2dimen
+        # self.data = np.load('机器学习/clustering_data.npy')
+        # self.data = self.data["data"]
+        #4dimen
+        self.data = pd.read_csv('/Users/huangweijun/Library/Mobile Documents/com~apple~CloudDocs/编程/P2_CLASS/机器学习/k-mean+linear/iris_student.csv', header=None)
+        self.data = self.data.to_numpy()
+        self.data = self.data[1:, 1:5].astype(float)
+
+        self.dimension = len(self.data[0])  #几维
+        self.numofdata = len(self.data)    #data个数
+        self.meanquantity = 4    #mean个
+        
+    def calculate_k(self):
+        self.wcss_all = np.zeros([10,2])
+        for x in range(1,11):
+            self.meanquantity = x
+            print(x)
+            wcss = 0
+            for a in range(50):  #算50次取平均值
+                self.mean = np.zeros([self.meanquantity,self.dimension])  #定义mean数组
+                self.random_m3()
+                flag1 = True   #判断是否相等
+                while flag1 == True:
+                    flag1 = False
+                    self.distance()
+                    self.new_mean()
+                    for c in range(len(self.mean_new)):
+                        for b in range(len(self.mean_new[0])):
+                            if not(self.mean_new[c,b] <= self.mean[c,b] + 0.1 and self.mean_new[c,b] >= self.mean[c,b] - 0.1):
+                                flag1 = True
+                    self.mean = self.mean_new
+                for q in range(self.meanquantity):    #总共几个mean
+                    for w in range(int(self.mean_group_count[q])):  #这一组的个数
+                        for e in range(int(self.dimension)):  #维度
+                            wcss += (self.mean_group[q,w,e] - self.mean[q,e])**2
+                # print(a)
+            self.wcss_all[x-1,0] = x
+            self.wcss_all[x-1,1] = wcss/50
+        self.meanquantity = 1
+        difference = self.wcss_all[0,1] - self.wcss_all[9,1]
+        for a in range(1,9):   #判断K
+            after = self.wcss_all[a,1] - self.wcss_all[a+1,1]
+            self.meanquantity = a + 1
+            if after / difference <= 0.075:
+                break
+        print(self.meanquantity)
+
+
+    def plot_wcss(self):
+        plt.plot(self.wcss_all[:,0], self.wcss_all[:,1])
+        plt.pause(10)
+                    
+                
+
+    def random_m1(self):
+        max_data = np.zeros(self.dimension)  #找到最大最小值
+        min_data = np.zeros(self.dimension)
+        for x in range(self.dimension):  #初始化
+            max_data[x] = self.data[0,x]
+            min_data[x] = self.data[0,x]
+        for x in range(1,self.numofdata):      #比较
+            for y in range(self.dimension):
+                if self.data[x,y] > max_data[y]:
+                    max_data[y] = self.data[x,y]
+                if self.data[x,y] < min_data[y]:
+                    min_data[y] = self.data[x,y]
+        for x in range(self.meanquantity):     #几个mean几次  随机mean
+            one_mean = np.zeros(self.dimension)
+            for y in range(self.dimension):   #几维几次
+                one_mean[y] = random()+randint(int(min_data[y]),int(max_data[y]))
+            self.mean[x] = one_mean
+
+    def random_m2(self):
+        index = sample(range(self.numofdata),self.meanquantity)
+        for x in range(self.meanquantity):
+            self.mean[x] = self.data[index[x]]
+        # print(self.mean)
+
+    def random_m3(self):
+        range1 = np.arange(self.numofdata)  #随机选一个点
+        index = choice(range1)
+        np.delete(range1,range1[index])  #不重复选点
+        self.mean[0] = self.data[index]
+        for x in range(1,self.meanquantity):  #确定剩下的meanquantity-1 个mean
+            distance = np.zeros(self.numofdata)   #初始化
+            probability = np.zeros(self.numofdata)
+            for data in range1:       #遍历每一个没有被选中的数据
+                group = np.zeros(x)        #初始化 几个mean几个0
+                for z in range(x):          #之前有的mean
+                    mean = self.mean[z]
+                    group[z] = np.linalg.norm(data-mean)  #算距离
+                distance[data] = min(group)    #取最大值 分散
+                # print(group)
+            wcss = np.sum(distance)
+            probability = distance / wcss    #算出
+            # print(distance,probability)
+            index = np.random.choice(a=range1,replace=False,size=1,p=probability)
+            self.mean[x] = self.data[index]
+            np.delete(range1,range1[index])
+        
+    def distance(self):  #分组
+        self.mean_group = np.zeros([self.meanquantity,self.numofdata,self.dimension])  #几个mean为几个 用于分组
+        self.mean_group_count = np.zeros(self.meanquantity)  #每一组group的项
+        for data in self.data:       #每一个数据
+            count = 0
+            group = np.zeros(self.meanquantity)          #初始化 几个mean几个0
+            for mean in self.mean:     #每一个平均数
+                distance = np.linalg.norm(data-mean)
+                group[count] = distance
+                count += 1
+            ans = min(group)
+            # print(group)
+            index = np.where(group == ans)[0][0]
+            # print(index,self.mean_group_count[index])
+            self.mean_group[index,int(self.mean_group_count[index])] = data  #放入分组
+            self.mean_group_count[index] += 1   #下一项
+        # print(self.mean_group)
+
+
+    def new_mean(self): #4
+        self.mean_new = np.zeros([self.meanquantity,self.dimension])  #定义一个新的mean
+        mean_count = 0      #初始化判断是哪个mean
+        for data_group in self.mean_group:   #每一组
+            total_value = np.zeros(self.dimension)  #定义全都是0
+            data_quantity = self.mean_group_count[mean_count]
+            for data in data_group:   #单个数据
+                total_value += data
+            if data_quantity != 0:
+                total_value /= data_quantity
+            self.mean_new[mean_count] = total_value
+            mean_count += 1 #记录是哪个mean
+        # print(self.mean_new,"mean")
+        # print(self.mean)
+        
+    def plot(self):
+        self.first = False
+        color = ["red","green","blue","yellow","grey","black","brown","orange","scarlet","lilac","purple"]
+        plt.clf()
+        plt.axis("off")
+        if self.first == True:
+            plt.scatter(self.data[:, 0], self.data[:, 1])   #第一次初始化
+            self.first = False
+            plt.pause(1)
+        for x in range(self.meanquantity):   #之后分组分颜色
+            plt.scatter(self.mean_group[x, 0:int(self.mean_group_count[x]), 0], self.mean_group[x, 0:int(self.mean_group_count[x]), 1], color = color[x])
+        plt.scatter(self.mean[:, 0], self.mean[:, 1], color = color[-1])  #画mean点
+        plt.show(block=False)
+        plt.pause(1)
+
+    def decision(self):    #操作
+        fig = plt.figure()
+        self.calculate_k()
+        self.plot_wcss()
+        self.mean = np.zeros([self.meanquantity,self.dimension])
+        self.random_m3()
+        flag1 = True   #判断是否相等
+        while flag1 == True:
+            flag1 = False
+            self.distance()
+            self.new_mean()
+            self.plot()
+            for x in range(len(self.mean_new)):
+                for y in range(len(self.mean_new[0])):
+                    if not(self.mean_new[x,y] <= self.mean[x,y] + 0.01 and self.mean_new[x,y] >= self.mean[x,y] - 0.01):
+                        flag1 = True
+            self.mean = self.mean_new
+        print("end")
+        plt.pause(10)
+    
+mean = k_mean()
+mean.decision()
+								</code></pre>
+								<h1>linear regression</h1>
+								<pre><code>
+									import numpy as np
+import matplotlib.pyplot as plt
+import random as rd
+class regression():
+    def __init__(self,a,regularisation):
+        self.test_data = np.load('机器学习/k-mean+linear/regression_data.npy')
+        self.regularisation = regularisation
+        self.train = self.test_data["train"]
+        self.test = self.test_data["test"]
+        self.learningrate = 1e-4
+        self.x_num,self.x_num_use = a + 1, a + 1
+        self.trainnum = len(self.train)
+        self.testnum = len(self.test)
+        self.trainx = self.train[:,0]
+        self.trainy = self.train[:,1]
+        self.testx = self.test[:,0]
+        self.testy = self.test[:,1]
+        self.trainLlist = np.zeros(self.x_num)
+        self.testLlist = np.zeros(self.x_num)
+        self.trainw = np.ones(self.x_num)
+        self.endpoint = max(np.max(self.trainx),np.max(self.testx))
+    def plot(self):
+        color = ["red", "green", "blue", "yellow", "grey", "black", "brown", "orange", "scarlet", "lilac", "purple"]
+        plt.scatter(self.trainx,self.trainy,color = "red")
+        # plt.scatter(self.testx,self.testy,color = "blue")
+        x = np.linspace(0,self.endpoint,100)
+        y = np.zeros(100)
+        count = 0
+        # print(x)
+        for j in x:
+            ans = 0
+            for z in range(self.x_num):
+                ans += self.trainw[z]*j**z
+            y[count] = ans
+            count += 1
+        plt.plot(x,y)
+        plt.show()
+        
+    def initialise_x(self,x_Data,x_num):
+        self.usex = np.zeros([self.x_num_use,x_num])   # size 2 10
+        self.usex = self.usex + np.transpose(x_Data)   #boradcast  2*10   =  2 * 10 + 1 * 10
+        for x in range(self.x_num_use):
+            self.usex[x] = self.usex[x] ** x
+
+
+    def gradientdescent(self):#
+        for x in range(30000):
+            self.initialise_x(self.trainx,self.trainnum)
+            # print(np.matmul(np.transpose(self.usex),self.trainw))
+            inner = self.trainy-np.matmul(np.transpose(self.usex),self.trainw)
+            differentiation = - (1 / self.trainnum) * np.matmul(self.usex,inner) + self.regularisation * self.trainw
+            self.trainw = self.trainw - self.learningrate * differentiation
+            if np.sum(np.isnan(self.trainw)) > 0:
+                raise ValueError("Gradient is NAN",self.x_num_use)
+            if np.linalg.norm(differentiation) <= 2:
+                print(x)
+                break
+        print(self.trainw)
+
+    def solvingequations(self):
+        self.initialise_x(self.trainx,self.trainnum)
+        I = np.eye(self.x_num_use)
+        p1 = np.matmul(self.usex,np.transpose(self.usex)) + self.regularisation * I #-1的项 （XXT）-1   2*2 =  2*1 1*2
+        p2 = np.matmul(self.usex,self.trainy)   # XY   2*1 = 2*10 * 10*1
+        # print(np.shape(p1),np.shape(p2))
+        self.trainw = np.linalg.solve(p1,p2)
+        print(self.trainw)
+
+    def loss_graph(self):
+        for x in range(self.x_num+1):
+            print(x)
+            self.x_num_use = x
+            self.solvingequations()
+            # self.gradientdescent()
+            self.trainL = 1/(2 * self.trainnum)*np.matmul(np.transpose((self.trainy-np.matmul(np.transpose(self.usex),self.trainw))),self.trainy-np.matmul(np.transpose(self.usex),self.trainw))
+            self.initialise_x(self.testx,self.testnum)
+            x -= 1
+            self.testL = 1/(2 * self.testnum)*np.matmul(np.transpose((self.testy-np.matmul(np.transpose(self.usex),self.trainw))),self.testy-np.transpose(np.matmul(np.transpose(self.trainw),self.usex)))
+            # print(np.shape(self.trainL),np.shape(self.testL))
+            self.trainLlist[x] = self.trainL
+            self.testLlist[x] = self.testL
+            # print(self.trainL)
+        x = np.arange(self.x_num)
+        # print(x)
+        plt.plot(x,self.trainLlist)
+        plt.plot(x,self.testLlist)
+        plt.scatter(x,self.trainLlist,color = "red")
+        plt.scatter(x,self.testLlist,color = "blue")
+        plt.show()
+
+
+aregression = regression(20,1e-6)
+# aregression.gradientdescent()  #m2
+aregression.solvingequations()  #m1
+aregression.plot()   #showingresult
+
+# aregression.loss_graph()  #drawgraph
+								</code></pre>
+							</article>
 						<!-- Elements -->
 							<article id="elements">
 								<h2 class="major">Elements</h2>
